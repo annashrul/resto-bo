@@ -65,6 +65,8 @@ class Api extends CI_Controller {
         }
         echo json_encode($response);
     }
+
+
     public function update_apk() {
         $response = array();
         $app = $_POST['app'];
@@ -87,8 +89,45 @@ class Api extends CI_Controller {
 	
 	public function get_produk(){
 		print_r($this->m_website->curl_store_online('get_produk'));
-		//print_r($this->m_website->request_api());g
+		//print_r($this->m_website->request_api());
 	}
+
+	public function getBahan($param){
+	    $response=array();
+	    if($param=='edit'){
+	        $output='';
+	        $no=1;
+	        $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
+	        $output.='
+	            <tr id="container_input">
+	                <td colspan="2">
+	                <input type="hidden" name="kode_bahan" class="form-control" id="kode_bahan">
+	                <input type="text" name="nm_brg" class="form-control" id="nm_brg">
+	                
+</td>
+	                <td><button class="btn btn-primary btn-sm"><i class="fa fa-send"></i></button></td>
+                </tr>
+	        ';
+	        if($result!=null){
+                foreach ($result as $row){
+                    $output.='
+	            <tr>
+	                <td>'.$no++.'</td>
+	                <td>'.$row["nm_brg"].'</td>
+                    <td><button class="btn btn-primary btn-sm" onclick="isShowInput(\'' . $row['kode_bahan'] . '\',\'' . $row['nm_brg'] . '\')"><i class="fa fa-edit"></i></button></td>
+
+                </tr>
+	            
+	            ';
+                }
+            }
+            else{
+	            $output.='<tr><td colspan="3">data tidak tersedia</td></tr>';
+            }
+            $response['result'] = $output;
+        }
+        echo json_encode($response);
+    }
 	
 	public function kartu_stock(){
 		ini_set('max_execution_time', 3600);
@@ -696,13 +735,32 @@ class Api extends CI_Controller {
 
                 foreach ($detail as $key => $item) {
                     $item['status_kcp'] = '1';
-                    if ($item['kcp'] != '' || $item['kcp'] != null) {
-                        $item['status_kcp'] = '0';
-                        $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
-                        array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => 'Pesanan Baru'));
+
+                    $get_paket = $this->m_crud->read_data("v_bahan", "kd_brg, nm_brg","kode_paket='".$item['kd_brg']."'");
+                    if(count($get_paket)>0){
+                        foreach ($get_paket as $kBahan => $iBahan) {
+                            // ketika barang tsb paket
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => 'Pesanan Baru'));
+
+                            // GENERAL PRINTER
+                            array_push($general_print[0]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+                        }
+
+                    }else{
+
+                        if ($item['kcp'] != '' || $item['kcp'] != null) {
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => 'Pesanan Baru'));
+                        }
+
+                        // GENERAL PRINTER
+                        array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
 
                     }
-                    array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+
                     unset($item['nm_brg']);
                     $item['no_to'] = $kode_to;
                     $item['tanggal'] = $tanggal;
@@ -732,19 +790,50 @@ class Api extends CI_Controller {
                 foreach ($detail as $key => $item) {
                     $item['status_kcp'] = '1';
                     $status = 'P';
-                    if ($item['kcp'] != '' || $item['kcp'] != null) {
-                        $item['status_kcp'] = '0';
-                        $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
-                        if ($item['qty'] < 0) {
-                            $status_print = 'Cancel';
-                            $status = 'S';
-                        } else {
-                            $status_print = 'Pesanan Baru';
-                            $status = 'P';
+                    $get_paket = $this->m_crud->read_data("v_bahan", "kd_brg, nm_brg","kode_paket='".$item['kd_brg']."'");
+                    if(count($get_paket)>0){
+                        foreach ($get_paket as $kBahan => $iBahan) {
+                            // ketika barang tsb paket
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            if ($item['qty'] < 0) {
+                                $status_print = 'Cancel';
+                                $status = 'S';
+                            } else {
+                                $status_print = 'Pesanan Baru';
+                                $status = 'P';
+                            }
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $status_print));
+
+                            // GENERAL PRINTER
+                            array_push($general_print[0]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$status_print));
                         }
-                        array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => abs($item['qty']), 'urutan'=>$item['urutan'], 'status' => $status_print));
+
+                    }else{
+
+                        if ($item['kcp'] != '' || $item['kcp'] != null) {
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => 'Pesanan Baru'));
+                        }
+
+                        // GENERAL PRINTER
+                        array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+
                     }
-                    array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+                    // if ($item['kcp'] != '' || $item['kcp'] != null) {
+                    //     $item['status_kcp'] = '0';
+                    //     $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                    //     if ($item['qty'] < 0) {
+                    //         $status_print = 'Cancel';
+                    //         $status = 'S';
+                    //     } else {
+                    //         $status_print = 'Pesanan Baru';
+                    //         $status = 'P';
+                    //     }
+                    //     array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => abs($item['qty']), 'urutan'=>$item['urutan'], 'status' => $status_print));
+                    // }
+                    // array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
 
                     unset($item['nm_brg']);
                     $item['no_to'] = $kd_trx;
@@ -825,12 +914,31 @@ class Api extends CI_Controller {
         if ($param == 'trx') {
             $read_data = $this->m_crud->join_data("detail_to dt", "dt.kd_brg, dt.qty, dt.kcp, dt.urutan, br.nm_brg", "barang br", "br.kd_brg=dt.kd_brg", "dt.no_to='".$kd_trx."' and dt.status='P'", "dt.urutan ASC");
             foreach ($read_data as $item) {
-                if ($item['kcp'] != '' || $item['kcp'] != null) {
-                    $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
-                    $status_print = 'Pesanan Batal';
-                    array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$ket, 'qty' => abs($item['qty']), 'urutan'=>$item['urutan'], 'status' => $status_print));
-                }
-                array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>'Pesanan Batal'));
+                $get_paket = $this->m_crud->read_data("v_bahan", "kd_brg, nm_brg","kode_paket='".$item['kd_brg']."'");
+                $pesan='Pesanan Batal';
+                    if(count($get_paket)>0){
+                        foreach ($get_paket as $kBahan => $iBahan) {
+                            // ketika barang tsb paket
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+
+                            // GENERAL PRINTER
+                            array_push($general_print[0]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+                        }
+
+                    }else{
+
+                        if ($item['kcp'] != '' || $item['kcp'] != null) {
+                            $item['status_kcp'] = '0';
+                            $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                            array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+                        }
+
+                        // GENERAL PRINTER
+                        array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+
+                    }
 
             }
 
@@ -942,12 +1050,37 @@ class Api extends CI_Controller {
             }
 
             $item = $this->m_crud->get_join_data("detail_to dt", "dt.kd_brg, dt.qty, dt.kcp, dt.urutan, br.nm_brg", "barang br", "br.kd_brg=dt.kd_brg", "dt.no_to='".$kd_trx."' and dt.kd_brg='".$kd_brg."' and urutan='".$urutan."' and dt.status_kcp='0' and dt.status='C'");
-            if ($item['kcp'] != '' || $item['kcp'] != null) {
-                $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
-                $status_print = 'Pesanan Batal';
-                array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket' => $ket, 'qty' => $item['qty'], 'urutan' => $item['urutan'], 'status' => $status_print));
+            // if ($item['kcp'] != '' || $item['kcp'] != null) {
+            //     $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+            //     $status_print = 'Pesanan Batal';
+            //     array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket' => $ket, 'qty' => $item['qty'], 'urutan' => $item['urutan'], 'status' => $status_print));
+            // }
+            // array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>'Pesanan Batal'));
+            $get_paket = $this->m_crud->read_data("v_bahan", "kd_brg, nm_brg","kode_paket='".$item['kd_brg']."'");
+            $pesan='Pesanan Batal';
+            if(count($get_paket)>0){
+                foreach ($get_paket as $kBahan => $iBahan) {
+                    // ketika barang tsb paket
+                    $item['status_kcp'] = '0';
+                    $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                    array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+
+                    // GENERAL PRINTER
+                    array_push($general_print[0]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+                }
+
+            }else{
+
+                if ($item['kcp'] != '' || $item['kcp'] != null) {
+                    $item['status_kcp'] = '0';
+                    $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                    array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+                }
+
+                // GENERAL PRINTER
+                array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+
             }
-            array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $item['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>'Pesanan Batal'));
 
         }
 
@@ -1007,13 +1140,28 @@ class Api extends CI_Controller {
             $item['status_kcp'] = '1';
             $get_barang = $this->m_crud->get_data("barang", "nm_brg", "kd_brg='".$item['kd_brg']."'");
 
-            if ($item['kcp'] != '' || $item['kcp'] != null) {
-                $item['status_kcp'] = '0';
-                $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
-                array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $get_barang['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+            $get_paket = $this->m_crud->read_data("v_bahan", "kd_brg, nm_brg","kode_paket='".$item['kd_brg']."'");
+            if(count($get_paket)>0){
+                foreach ($get_paket as $kBahan => $iBahan) {
+                    // ketika barang tsb paket
+                    $item['status_kcp'] = '0';
+                    $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                    array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
 
+                    // GENERAL PRINTER
+                    array_push($general_print[0]['list'], array('kd_brg' => $iBahan['kd_brg'], 'nm_brg' => $iBahan['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+                }
+
+            }else{
+                if ($item['kcp'] != '' || $item['kcp'] != null) {
+                    $item['status_kcp'] = '0';
+                    $found_key = array_search($item['kcp'], array_column($get_printer, 'id_printer'));
+                    array_push($kitchen_print[$found_key]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $get_barang['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' => $pesan));
+                }
+                array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $get_barang['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
             }
-            array_push($general_print[0]['list'], array('kd_brg' => $item['kd_brg'], 'nm_brg' => $get_barang['nm_brg'], 'ket'=>$item['ket'], 'qty' => $item['qty'], 'urutan'=>$item['urutan'], 'status' =>$pesan));
+
+            
         }
 
         $this->m_website->insert_log_print($kitchen_print, 'to', $get_master['lokasi']);
