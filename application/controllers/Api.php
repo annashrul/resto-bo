@@ -92,43 +92,43 @@ class Api extends CI_Controller {
 		//print_r($this->m_website->request_api());
 	}
 
-	// public function getBahan($param){
-	//     $response=array();
-	//     if($param=='edit'){
-	//         $output='';
-	//         $no=1;
-	//         $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
-	//         $output.='
-	//             <tr id="container_input">
-	//                 <td colspan="2">
-	//                 <input type="hidden" name="kode_bahan" class="form-control" id="kode_bahan">
-	//                 <input type="text" name="nm_brg" class="form-control" id="nm_brg">
-	                
+    // public function getBahan($param){
+    //     $response=array();
+    //     if($param=='edit'){
+    //         $output='';
+    //         $no=1;
+    //         $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
+    //         $output.='
+    //             <tr id="container_input">
+    //                 <td colspan="2">
+    //                 <input type="hidden" name="kode_bahan" class="form-control" id="kode_bahan">
+    //                 <input type="text" name="nm_brg" class="form-control" id="nm_brg">
+                    
     //                 </td>
-	//                 <td><button class="btn btn-primary btn-sm"><i class="fa fa-send"></i></button></td>
+    //                 <td><button class="btn btn-primary btn-sm"><i class="fa fa-send"></i></button></td>
     //             </tr>
-	//         ';
-	//         if($result!=null){
+    //         ';
+    //         if($result!=null){
     //             foreach ($result as $row){
     //                 $output.='
-	//             <tr>
-	//                 <td>'.$no++.'</td>
-	//                 <td>'.$row["nm_brg"].'</td>
+    //             <tr>
+    //                 <td>'.$no++.'</td>
+    //                 <td>'.$row["nm_brg"].'</td>
     //                 <td><button class="btn btn-primary btn-sm" onclick="isShowInput(\'' . $row['kode_bahan'] . '\',\'' . $row['nm_brg'] . '\')"><i class="fa fa-edit"></i></button></td>
 
     //             </tr>
-	            
-	//             ';
+                
+    //             ';
     //             }
     //         }
     //         else{
-	//             $output.='<tr><td colspan="3">data tidak tersedia</td></tr>';
+    //             $output.='<tr><td colspan="3">data tidak tersedia</td></tr>';
     //         }
     //         $response['result'] = $output;
     //     }
     //     echo json_encode($response);
     // }
-	
+                                            
 	public function kartu_stock(){
 		ini_set('max_execution_time', 3600);
         ini_set('memory_limit', '1024M');
