@@ -48,10 +48,7 @@
 							</div>
 							<div class="label_colom" draggable="true" id="dragme" style="margin-left:2mm; margin-top:2mm; font-size:16px; color:black;">
 								<b><?=substr($value['nm_brg'],0,17)?></b>
-							</div>
-							<!--<div class="label_colom" draggable="true" id="dragme" style="margin-left:2mm; margin-top:7mm; font-size:12px; color:black;">
-								<b><?php//$value['barcode']?></b>
-							</div>-->
+							</div> -->
 							<div class="label_colom" draggable="true" id="dragme" style="margin-left:2mm; margin-top:23mm; font-size:12px; color:black;">
 								<b><?=$value['kd_brg']?></b>
 							</div>
