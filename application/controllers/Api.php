@@ -24,47 +24,46 @@ class Api extends CI_Controller {
         parent::__construct();
         date_default_timezone_set('Asia/Jakarta');
     }
-    // public function getBahan($param){
-    //     $response=array();
-    //     if($param=='edit'){
-    //         $output='';
-    //         $no=1;
-    //         $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
-    //         if($result!=null){
-    //             foreach ($result as $row){
-    //                 $output.='
-	//             <tr>
-	//                 <td>'.$no++.'</td>
-	//                 <td>'.$row["nm_brg"].'</td>
-    //                 <td><button class="btn btn-primary btn-sm" onclick="deleteBahan(\'' . $row['kode_bahan'] . '\',\'' . $_POST['kd_brg'] . '\',\'' .  $_POST['nm_brg'] . '\')"><i class="fa fa-close"></i></button></td>
-    //             </tr>
-	//             ';
-    //             }
-    //         }
-    //         else{
-    //             $output.='<tr><td colspan="3">data tidak tersedia</td></tr>';
-    //         }
-    //         $response['result'] = $output;
-    //     }
-    //     elseif($param=='add'){
-    //         $cek = $this->m_crud->get_data("v_bahan","kode_paket,kode_bahan,nm_brg","kode_bahan='".$_POST['kode_bahan']."'");
-    //         if($cek==null){
-    //             $this->m_crud->create_data("bahan",array(
-    //                 "kode_paket"=>$_POST['kode_paket'],
-    //                 "kode_bahan"=>$_POST['kode_bahan'],
-    //             ));
-    //             $response['status']=true;
-    //         }else{
-    //             $response['status']=false;
-    //         }
+    public function getBahan($param){
+        $response = array();
+        if ($param == 'edit') {
+            $output = '';
+            $no = 1;
+            $result = $this->m_crud->read_data("v_bahan", "id,kode_paket,kode_bahan,kd_brg,nm_brg", "kode_paket='" . $_POST['kd_brg'] . "'");
+            if ($result != null) {
+                foreach ($result as $row) {
+                    $output .= '
+	            <tr>
+	                <td>' . $no++ . '</td>
+	                <td>' . $row["nm_brg"] . '</td>
+                    <td><button class="btn btn-primary btn-sm" onclick="deleteBahan(\'' . $row['kode_bahan'] . '\',\'' . $_POST['kd_brg'] . '\',\'' . $_POST['nm_brg'] . '\')"><i class="fa fa-close"></i></button></td>
+                </tr>
+	            ';
+                }
+            } else {
+                $output .= '<tr><td colspan="3">data tidak tersedia</td></tr>';
+            }
+            $response['result'] = $output;
+        }
+        elseif ($param == 'add') {
+            $cek = $this->m_crud->get_data("v_bahan", "kode_paket,kode_bahan,nm_brg", "kode_bahan='" . $_POST['kode_bahan'] . "'");
+            if ($cek == null) {
+                $this->m_crud->create_data("bahan", array(
+                    "kode_paket" => $_POST['kode_paket'],
+                    "kode_bahan" => $_POST['kode_bahan'],
+                ));
+                $response['status'] = true;
+            } else {
+                $response['status'] = false;
+            }
+        }
+        elseif($param=='delete'){
+            $this->m_crud->delete_data("bahan", "kode_bahan='".$_POST['kd_bahan']."'");
+            $response['status']=true;
+        }
+        echo json_encode($response);
+    }
 
-    //     }
-    //     elseif($param=='delete'){
-    //         $this->m_crud->delete_data("bahan", "kode_bahan='".$_POST['kd_bahan']."'");
-    //         $response['status']=true;
-    //     }
-    //     echo json_encode($response);
-    // }
 
 
     public function update_apk() {
@@ -92,42 +91,7 @@ class Api extends CI_Controller {
 		//print_r($this->m_website->request_api());
 	}
 
-    public function getBahan($param){
-        $response=array();
-        if($param=='edit'){
-            $output='';
-            $no=1;
-            $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
-            $output.='
-                <tr id="container_input">
-                    <td colspan="2">
-                    <input type="hidden" name="kode_bahan" class="form-control" id="kode_bahan">
-                    <input type="text" name="nm_brg" class="form-control" id="nm_brg">
-                    
-                    </td>
-                    <td><button class="btn btn-primary btn-sm"><i class="fa fa-send"></i></button></td>
-                </tr>
-            ';
-            if($result!=null){
-                foreach ($result as $row){
-                    $output.='
-                <tr>
-                    <td>'.$no++.'</td>
-                    <td>'.$row["nm_brg"].'</td>
-                    <td><button class="btn btn-primary btn-sm" onclick="isShowInput(\'' . $row['kode_bahan'] . '\',\'' . $row['nm_brg'] . '\')"><i class="fa fa-edit"></i></button></td>
 
-                </tr>
-                
-                ';
-                }
-            }
-            else{
-                $output.='<tr><td colspan="3">data tidak tersedia</td></tr>';
-            }
-            $response['result'] = $output;
-        }
-        echo json_encode($response);
-    }
                                             
 	public function kartu_stock(){
 		ini_set('max_execution_time', 3600);

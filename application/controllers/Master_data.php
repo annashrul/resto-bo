@@ -1717,7 +1717,10 @@ class Master_data extends CI_Controller {
                     if(isset($_POST['bahan'])){
                         $data_bahan=array();
                         for ($i=0; $i<count($_POST['bahan']); $i++) {
-                            array_push($data_bahan,['kode_paket'=>$_POST['kd_brg'],'kode_bahan'=>$_POST['bahan'][$i]]);
+                            array_push($data_bahan,array(
+                                'kode_paket'=>$_POST['kd_brg'],
+                                'kode_bahan'=>$_POST['bahan'][$i]
+                            ));
                         }
                         $this->db->insert_batch('bahan', $data_bahan);
                     }
@@ -1752,7 +1755,6 @@ class Master_data extends CI_Controller {
                     );
 
                     $this->m_crud->create_data($table, $master);
-                    $this->db->insert_batch('bahan', $data_bahan);
 
 
                     $read_lokasi = $this->m_crud->read_data('Lokasi', 'Kode, Nama, server, db_name', "Kode<>'HO'");
