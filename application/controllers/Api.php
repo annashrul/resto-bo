@@ -661,7 +661,7 @@ class Api extends CI_Controller {
             $master['tanggal'] = $tanggal;
             $master['waktu'] = $waktu;
             $master['gabung'] = '';
-            $atas_nama=count($detail)>1?$detail[0]['atas_nama']:'-';
+			$atas_nama = count($detail) > 1 ? $master['atas_nama'] : '-';
             $master['atas_nama'] = $atas_nama;
             $master['status'] = 'P'; //status S=Success, P=On Process, C=Cancel
             //type_order D=Dinein, T=Take Away, O=Online Order
