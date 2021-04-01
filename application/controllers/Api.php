@@ -416,8 +416,11 @@ class Api extends CI_Controller {
                 $nama_meja = $this->m_crud->get_data("data_meja", "(nama_area + ' ' + nama_meja) text", "id_meja='".$update['data']."'")['text'];
 
                 foreach ($get_printer as $item) {
-                    array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$id, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$master['kd_waitres'], 'atas_nama'=>$master['atas_nama'], 'no_meja'=>$master['no_meja'], 'no_meja_2'=>$nama_meja, 'status'=>'Pindah Meja', 'list'=>array()));
-                }
+                                    
+                    array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                if($item['id_printer']=='KP0001'){
+                    array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                }                }
 
                 if ($master['meja'] != $update['data']) {
                     $get_det_to = $this->m_crud->join_data("detail_to dt", "dt.kcp, dt.kd_brg, br.nm_brg, dt.qty, dt.urutan", "barang br", "br.kd_brg=dt.kd_brg", "dt.status='P' AND dt.no_to='".$id."'");
@@ -706,9 +709,9 @@ class Api extends CI_Controller {
             $general_print = array();
             $get_printer = $this->m_crud->read_data("kitchen_printer", "id_printer, konektor, vid, pid, ip");
             foreach ($get_printer as $item) {
-                array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
                 if($item['id_printer']=='KP0001'){
-                    array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                    array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
                 }
 
             }
@@ -905,9 +908,9 @@ class Api extends CI_Controller {
         $kitchen_print = array();
         $get_printer = $this->m_crud->read_data("kitchen_printer", "id_printer, konektor, vid, pid, ip");
         foreach ($get_printer as $item) {
-            array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kd_trx, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$this->m_crud->get_data("sales", "nama", "kode='".$get_master['kd_waitres']."'")['nama'], 'atas_nama'=>$get_master['atas_nama'], 'no_meja'=>$get_master['no_meja'], 'status'=>'Pesanan Batal'.' '.$item['nama'], 'list'=>array()));
+            array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
             if($item['id_printer']=='KP0001'){
-                array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$master['atas_nama'], 'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>'Pesanan Batal'.' '.$item['nama'], 'list'=>array()));
+                array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
             }
         }
 
@@ -1129,10 +1132,10 @@ class Api extends CI_Controller {
         $general_print = array();
         $get_printer = $this->m_crud->read_data("kitchen_printer", "id_printer, konektor, vid, pid, ip");
         foreach ($get_printer as $item) {
-            array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kd_trx, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$get_master['atas_nama'], 'no_meja'=>$get_master['no_meja'], 'keterangan'=>$get_master['keterangan'], 'status'=>$pesan, 'list'=>array()));
-            if($item['id_printer']=='KP0001'){
-                array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$get_master['atas_nama'], 'no_meja'=>$get_master['no_meja'], 'keterangan'=>$get_master['keterangan'], 'status'=>$pesan, 'list'=>array()));
-            }
+             array_push($kitchen_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                if($item['id_printer']=='KP0001'){
+                    array_push($general_print, array('server'=>$item['ip'], 'konektor'=>$item['konektor'], 'vid'=>$item['vid'], 'pid'=>$item['pid'], 'kd_trx'=>$kode_to, 'tanggal'=>$tanggal, 'waktu'=>$waktu, 'waitres'=>$waitres, 'atas_nama'=>$atas_nama, 'jml_tamu'=>$master['jml_tamu'],'no_meja'=>$master['no_meja'], 'keterangan'=>$master['keterangan'], 'status'=>$pesan.' '.$item['nama'], 'list'=>array()));
+                }
 
         }
         
