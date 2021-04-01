@@ -29,7 +29,7 @@ class Api extends CI_Controller {
         if($param=='edit'){
             $output='';
             $no=1;
-            $result=$this->m_crud->read_data("v_bahan","*","kode_paket='".$_POST['kd_brg']."'");
+            $result=$this->m_crud->read_data("v_bahan","id,kode_paket,kode_bahan,kd_brg,nm_brg","kode_paket='".$_POST['kd_brg']."'");
             if($result!=null){
                 foreach ($result as $row){
                     $output.='
