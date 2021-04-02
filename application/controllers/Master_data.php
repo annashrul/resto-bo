@@ -1722,6 +1722,7 @@ class Master_data extends CI_Controller {
                                 'kode_bahan'=>$_POST['bahan'][$i]
                             ));
                         }
+//                        var_dump($data_bahan);die();
                         $this->db->insert_batch('bahan', $data_bahan);
                     }
 

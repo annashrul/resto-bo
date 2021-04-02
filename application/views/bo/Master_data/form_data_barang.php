@@ -213,7 +213,7 @@
                                 <!--<input type="hidden" name="kategori" id="kategori" value="Non Paket">-->
                                 <!--<input type="hidden" name="Jenis" id="Jenis" value="Barang Dijual">-->
 
-                                <div class="form-group " style="margin-bottom:5px;display: <?=isset($_GET['trx'])?"none":"block"?>" id="container_bahan">
+                                <div class="form-group " style="margin-bottom:5px;" id="container_bahan">
                                     <label class="control-label col-lg-4">Bahan</label>
                                     <div class="col-lg-8">
                                         <?php
@@ -238,7 +238,7 @@
                                         <?=form_error($field, '<div class="error" style="color:red;">', '</div>')?>
                                     </div>
                                 </div>
-                                <div class="form-group " style="margin-bottom:5px;" id="container_kcp">
+                                <div class="form-group " style="margin-bottom:5px;">
                                     <label class="control-label col-lg-4">Kitchen Printer</label>
                                     <div class="col-lg-8">
                                         <?php
@@ -482,10 +482,12 @@
         $("#Jenis").val("Barang Dijual");
         $("#container_kcp").css("display","block");
         $("#container_bahan").css("display","none");
-
+        console.log(val,"<?=isset($_GET['trx'])?>");
         if(val==='Paket'){
             $("#container_kcp").css("display","none");
-            $("#container_bahan").css("display","block");
+            if("<?=isset($_GET['trx'])?>"===""){
+                $("#container_bahan").css("display","block");
+            }
 
         }
         if(val==='Bahan Baku'){
